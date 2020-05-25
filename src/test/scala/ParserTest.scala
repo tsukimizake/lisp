@@ -7,6 +7,8 @@ class ParserTest extends org.scalatest.FunSuite {
     assert(List(Symbol("eu")) == List(Symbol("eu")))
   }
   test("symbol token") {
+    // これが通らない
+    // 左辺がToken型で右辺がSymbol型だと比較がうまくいかない
     assert(Parser.tokenize("honi")(0) == Symbol("honi"))
 
   }
