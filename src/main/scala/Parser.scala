@@ -11,11 +11,28 @@ case object Dot extends Token
 case object NilTok extends Token
 case class StrLit(str: String) extends Token
 case class NumLit(value: Int) extends Token
-case class Symbol(name: String) extends Token
+case class Symbol(name: String) extends Token {
+  implicit def castExpr(): Expr = { Sym(this.name) }
+}
 
 object Parser {
-  def parseExpr(input: String) = {}
+  def parseExpr(input: String) = {
+    val tokens = tokenize(input)
+    var stack = new mutable.Stack[Expr]()
+    sexp(tokens, stack)
 
+  }
+
+  private def sexp(tokens: List[Token], stack: mutable.Stack[Expr]): Expr = {
+    tokens(0) match {
+      case OParen    => ???
+      case CParen    => ???
+      case Dot       => ???
+      case x: Symbol => x.castExpr()
+
+    }
+
+  }
   def tokenize(input: String): List[Token] = {
     var iter: Int = 0;
     var buf: mutable.ListBuffer[Token] = new mutable.ListBuffer()
@@ -37,7 +54,7 @@ object Parser {
               var i = iter + 1
               var str = ""
               while (i != input.length() &&
-                     !(input.charAt(i) == '"' && input.charAt(i - 1) != '\\')) {
+                     !(input.charAt(i) == '"' && input.charAt(i - 1) != '\\')) { // TODO "\\"の扱い?
                 str += input.charAt(i)
                 i += 1
               }
