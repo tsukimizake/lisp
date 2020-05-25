@@ -6,7 +6,8 @@ sealed trait Token
 
 case object OParen extends Token
 case object CParen extends Token
-case object Apostroph extends Token
+case object Quote extends Token
+case object Dot extends Token
 case object NilTok extends Token
 case class StrLit(str: String) extends Token
 case class NumLit(value: Int) extends Token
@@ -31,7 +32,7 @@ object Parser {
             if (input.charAt(iter) == '(') { iter += 1; OParen }
             else if (input.charAt(iter) == ')') {
               iter += 1; CParen
-            } else if (input.charAt(iter) == '\'') { iter += 1; Apostroph }
+            } else if (input.charAt(iter) == '\'') { iter += 1; Quote }
             else if (input.charAt(iter) == '"') {
               var i = iter + 1
               var str = ""
@@ -42,13 +43,15 @@ object Parser {
               }
               iter = i
               StrLit(str)
+            } else if (input.charAt(iter) == '.') {
+              iter += 1; Dot
             } else if (input.substring(iter, iter + 2) == "Nil") {
               iter += 3; NilTok
             } else if (('0' to '9').contains(input.charAt(iter))) {
               var buf = ""
               var i = iter
-              while (i != input.length() 
-                       && (('0' to '9').contains(input.charAt(i)))) {
+              while (i != input.length()
+                     && (('0' to '9').contains(input.charAt(i)))) {
                 buf += input.charAt(i)
                 i += 1
               }
@@ -57,7 +60,7 @@ object Parser {
               var i = iter
               var str = ""
               while (i != input.length()
-                     && !"()' \t\n".contains(input.charAt(i))) {
+                     && !"()\".' \t\n".contains(input.charAt(i))) {
                 str += input.charAt(i)
                 i += 1
               }
