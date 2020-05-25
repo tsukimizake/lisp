@@ -1,6 +1,8 @@
 class ParserTest extends org.scalatest.FunSuite {
   test("symbol eq") {
-    assert(Symbol("eu") == Symbol("eu"))
+    val x = new Symbol("eu")
+    val y = new Symbol("eu")
+    assert(x == y)
 
   }
   test("symbol list eq") {
@@ -9,7 +11,8 @@ class ParserTest extends org.scalatest.FunSuite {
   test("symbol token") {
     // これが通らない
     // 左辺がToken型で右辺がSymbol型だと比較がうまくいかない
-    assert(Parser.tokenize("honi")(0) == Symbol("honi"))
+    val r: Token = new Symbol("honi")
+    assert(Parser.tokenize("honi")(0) == r)
 
   }
   test("(a test)") {

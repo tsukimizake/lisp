@@ -8,16 +8,16 @@ object OParen extends Token
 object CParen extends Token
 object Apostroph extends Token
 object NilTok extends Token
-sealed class StrLit(str: String) extends Token
-sealed class NumLit(value: Int) extends Token
-sealed class Symbol(name: String) extends Token {
-  //def name(): String = name
-  //override def equals(x: Token): Boolean = {
-  //  x match {
-  //    case x: Symbol => this.name == x.name()
-  //    case _         => false
-  //  }
-  //}
+class StrLit(str: String) extends Token
+class NumLit(value: Int) extends Token
+class Symbol(name: String) extends Token {
+  def name(): String = name
+  override def equals(x: Any): Boolean = {
+    x match {
+      case x: Symbol => this.name() == x.name()
+      case _         => false
+    }
+  }
 }
 
 object Parser {
