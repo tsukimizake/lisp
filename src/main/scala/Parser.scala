@@ -44,9 +44,15 @@ object Parser {
               new StrLit(str)
             } else if (input.substring(iter, iter + 2) == "Nil") {
               iter += 3; NilTok
-            }
-//          else if ('0' <= input.charAt(iter) && input.charAt(iter) <= '9'){}
-            else { // symbol
+            } else if ('0' <= input.charAt(iter) && input.charAt(iter) <= '9') {
+              var buf = ""
+              var i = iter
+              while (i != input.length()) {
+                buf += input.charAt(i)
+                i += 1
+              }
+              NumLit(buf.toInt)
+            } else { // symbol
               var i = iter
               var str = ""
               while (i != input.length() && input.charAt(i) != ' ') {
@@ -54,7 +60,6 @@ object Parser {
                 i += 1
               }
               iter = i
-              println(str)
               new Symbol(str)
             }
           buf.addOne(tok)
