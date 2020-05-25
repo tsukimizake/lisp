@@ -28,10 +28,10 @@ object Parser {
           break() //continue
         } else {
           val tok: Token =
-            if (input.charAt(iter) == '(') {
-              iter += 1; OParen
-            } else if (input.charAt(iter) == ')') { iter += 1; CParen }
-            else if (input.charAt(iter) == '\'') { iter += 1; Apostroph }
+            if (input.charAt(iter) == '(') { iter += 1; OParen }
+            else if (input.charAt(iter) == ')') {
+              iter += 1; CParen
+            } else if (input.charAt(iter) == '\'') { iter += 1; Apostroph }
             else if (input.charAt(iter) == '"') {
               var i = iter + 1
               var str = ""
@@ -55,7 +55,8 @@ object Parser {
             } else { // symbol
               var i = iter
               var str = ""
-              while (i != input.length() && input.charAt(i) != ' ') {
+              while (i != input.length()
+                     && !"()' \t\n".contains(input.charAt(i))) {
                 str += input.charAt(i)
                 i += 1
               }

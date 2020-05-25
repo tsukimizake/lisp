@@ -3,10 +3,29 @@ class ParserTest extends org.scalatest.FunSuite {
     assert(Parser.tokenize("honi") == List(Symbol("honi")))
   }
   test("(a test)") {
+    assert(
+      Parser.tokenize("(a test)") == List(
+        OParen,
+        Symbol("a"),
+        Symbol("test"),
+        CParen
+      )
+    )
     Parser.parseExpr("(a test)")
   }
 
-  test("(a (nested) test)") {
+  test("(a (nested ) test)") {
+    assert(
+      Parser.tokenize("(a (nested) test)") == List(
+        OParen,
+        Symbol("a"),
+        OParen,
+        Symbol("nested"),
+        CParen,
+        Symbol("test"),
+        CParen
+      )
+    )
     Parser.parseExpr("(a (nested) test)")
   }
 
