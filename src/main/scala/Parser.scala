@@ -44,10 +44,11 @@ object Parser {
               StrLit(str)
             } else if (input.substring(iter, iter + 2) == "Nil") {
               iter += 3; NilTok
-            } else if ('0' <= input.charAt(iter) && input.charAt(iter) <= '9') {
+            } else if (('0' to '9').contains(input.charAt(iter))) {
               var buf = ""
               var i = iter
-              while (i != input.length()) {
+              while (i != input.length() 
+                       && (('0' to '9').contains(input.charAt(i)))) {
                 buf += input.charAt(i)
                 i += 1
               }
