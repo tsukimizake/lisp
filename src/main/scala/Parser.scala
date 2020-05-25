@@ -17,7 +17,7 @@ case class Symbol(name: String) extends Token {
 
 object Parser {
   def parseExpr(input: String) = {
-    val tokens = tokenize(input)
+    val tokens = Tokenizer.tokenize(input)
     var stack = new mutable.Stack[Expr]()
     sexp(tokens, stack)
 
@@ -33,6 +33,11 @@ object Parser {
     }
 
   }
+
+  def parseStatement(input: String): List[Expr] = ???
+  def parseFile(file: File): Expr = ???
+}
+object Tokenizer {
   def tokenize(input: String): List[Token] = {
     var iter: Int = 0;
     var buf: mutable.ListBuffer[Token] = new mutable.ListBuffer()
@@ -91,7 +96,4 @@ object Parser {
     }
     return buf.toList
   }
-
-  def parseStatement(input: String): List[Expr] = ???
-  def parseFile(file: File): Expr = ???
 }
