@@ -4,21 +4,13 @@ import util.control.Breaks._
 
 sealed trait Token
 
-object OParen extends Token
-object CParen extends Token
-object Apostroph extends Token
-object NilTok extends Token
-class StrLit(str: String) extends Token
-class NumLit(value: Int) extends Token
-class Symbol(name: String) extends Token {
-  def name(): String = name
-  override def equals(x: Any): Boolean = {
-    x match {
-      case x: Symbol => this.name() == x.name()
-      case _         => false
-    }
-  }
-}
+case object OParen extends Token
+case object CParen extends Token
+case object Apostroph extends Token
+case object NilTok extends Token
+case class StrLit(str: String) extends Token
+case class NumLit(value: Int) extends Token
+case class Symbol(name: String) extends Token
 
 object Parser {
   def parseExpr(input: String) = {}
