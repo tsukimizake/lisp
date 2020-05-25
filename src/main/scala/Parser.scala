@@ -41,7 +41,7 @@ object Parser {
                 i += 1
               }
               iter = i
-              new StrLit(str)
+              StrLit(str)
             } else if (input.substring(iter, iter + 2) == "Nil") {
               iter += 3; NilTok
             } else if ('0' <= input.charAt(iter) && input.charAt(iter) <= '9') {
@@ -60,7 +60,7 @@ object Parser {
                 i += 1
               }
               iter = i
-              new Symbol(str)
+              Symbol(str)
             }
           buf.addOne(tok)
         }
