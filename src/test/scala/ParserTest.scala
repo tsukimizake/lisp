@@ -46,7 +46,7 @@ class ParserTest extends org.scalatest.FunSuite {
     Parser.parseExpr("(a (dotted . list) test)")
   }
 
-  test("(a '(quoted (dotted . list)) test)") {
+  test("(a '(quoted (dotted . list)  ) test)") {
     assert(
       Parser.tokenize("(a '(quoted (dotted . list)) test)") == List(
         OParen,
@@ -59,6 +59,36 @@ class ParserTest extends org.scalatest.FunSuite {
         Dot,
         Symbol("list"),
         CParen,
+        CParen,
+        Symbol("test"),
+        CParen
+      )
+    )
+    Parser.parseExpr("(a '(quoted (dotted . list)) test)")
+  }
+
+  test("42") {
+    assert(Parser.tokenize("42") == List(NumLit(42)))
+  }
+
+  test("\"hoge\"") {
+    assert(Parser.tokenize("\"hoge\"") == List(StrLit("hoge")))
+  }
+
+  test("(a '(quoted (dotted . \"list\") 42) test)") {
+    assert(
+      Parser.tokenize("(a '(quoted (dotted . \"list\") 42) test)") == List(
+        OParen,
+        Symbol("a"),
+        Quote,
+        OParen,
+        Symbol("quoted"),
+        OParen,
+        Symbol("dotted"),
+        Dot,
+        StrLit("list"),
+        CParen,
+        NumLit(42),
         CParen,
         Symbol("test"),
         CParen

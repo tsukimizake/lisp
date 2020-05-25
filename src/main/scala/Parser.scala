@@ -41,7 +41,7 @@ object Parser {
                 str += input.charAt(i)
                 i += 1
               }
-              iter = i
+              iter = i + 1
               StrLit(str)
             } else if (input.charAt(iter) == '.') {
               iter += 1; Dot
@@ -55,6 +55,7 @@ object Parser {
                 buf += input.charAt(i)
                 i += 1
               }
+              iter = i
               NumLit(buf.toInt)
             } else { // symbol
               var i = iter
