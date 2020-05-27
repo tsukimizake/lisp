@@ -1,6 +1,7 @@
 import java.io.File
 import scala.collection.mutable
 import util.control.Breaks._
+import scala.language.implicitConversions
 
 sealed trait Token
 
@@ -9,34 +10,65 @@ case object CParen extends Token
 case object Quote extends Token
 case object Dot extends Token
 case object NilTok extends Token
-case class StrLit(str: String) extends Token
-case class NumLit(value: Int) extends Token
-case class Symbol(name: String) extends Token {
+case class StrLit(str: String) extends Token {
+  def castExpr(): Expr = { Str(this.str) }
+}
+case class NumLit(value: Int) extends Token {
+  def castExpr(): Expr = { Num(this.value) }
+}
+case class Symbol(name: String) extends Token { // TODO 変形シングルトンにしてeqをアドレス比較
   implicit def castExpr(): Expr = { Sym(this.name) }
 }
+
+object QuoteSym extends Symbol("quote")
 
 object Parser {
   def parseExpr(input: String) = {
     val tokens = Tokenizer.tokenize(input)
-    var stack = new mutable.Stack[Expr]()
-    sexp(tokens, stack)
+    sexp(tokens)
 
   }
 
-  private def sexp(tokens: List[Token], stack: mutable.Stack[Expr]): Expr = {
+  private def sexp(tokens: List[Token]): Expr = {
     tokens(0) match {
-      case OParen    => ???
-      case CParen    => ???
-      case Dot       => ???
+      case OParen    => list(tokens)
       case x: Symbol => x.castExpr()
-
+      case x: NumLit => x.castExpr()
+      case x: StrLit => x.castExpr()
+      case Quote => {
+        val tail = tokens.drop(1)
+        tail.head match {
+          case x: Symbol =>
+            sexp(
+              List(OParen, QuoteSym, tail.head, CParen) ++ tail.drop(1)
+            )
+          case OParen =>
+            sexp(
+              List(OParen, QuoteSym) ++ tail.drop(1)
+            )
+          case _ => ???
+        }
+      }
+      case NilTok => Nil()
+      case CParen => Nil()
+      case Dot => {
+        val tail = tokens.drop(1)
+        sexp(List(tail.head))
+      }
     }
+  }
+
+  private def list(tokens: List[Token]): Expr = {
+    val tail = tokens.drop(1)
+    val car = sexp(tail)
+    Cons(sexp(List(tail(0))), sexp(tail.drop(1).dropRight(1))) //うそ
 
   }
 
   def parseStatement(input: String): List[Expr] = ???
   def parseFile(file: File): Expr = ???
 }
+
 object Tokenizer {
   def tokenize(input: String): List[Token] = {
     var iter: Int = 0;
