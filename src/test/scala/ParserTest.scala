@@ -29,10 +29,18 @@ class ParserTest extends org.scalatest.FunSuite {
         CParen
       )
     )
+    // format: off
     assert(
       Parser.parseExpr("(a (nested) test)")
-        == Cons(Cons(Sym("nested"), Nil()), Cons(Sym("test"), Nil()))
+        == 
+        Cons(
+          Sym("a"),
+          Cons(
+            Cons(Sym("nested"), Nil()), 
+            Cons(Sym("test"), Nil()))
+        )
     )
+    // format: on
   }
 
   test("(a (dotted . list) test)") {
