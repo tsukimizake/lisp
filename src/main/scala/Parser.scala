@@ -22,46 +22,52 @@ case class Symbol(name: String) extends Token { // TODO 変形シングルトン
 
 object QuoteSym extends Symbol("quote")
 
-object Parser {
-  def parseExpr(input: String) = {
-    val tokens = Tokenizer.tokenize(input)
-    sexp(tokens)
+class SexpParser(tokens: List[Token], var iter: Int) {
 
-  }
-
-  private def sexp(tokens: List[Token]): Expr = {
-    tokens(0) match {
-      case OParen    => list(tokens)
-      case x: Symbol => x.castExpr()
-      case x: NumLit => x.castExpr()
-      case x: StrLit => x.castExpr()
+  def sexp(): Expr = {
+    tokens(iter) match {
+      case OParen    => { moveIter(1); list() }
+      case x: Symbol => { moveIter(1); x.castExpr() }
+      case x: NumLit => { moveIter(1); x.castExpr() }
+      case x: StrLit => { moveIter(1); x.castExpr() }
       case Quote => {
         val tail = tokens.drop(1)
         tail.head match {
           case x: Symbol =>
-            sexp(
-              List(OParen, QuoteSym, tail.head, CParen) ++ tail.drop(1)
-            )
+            new SexpParser(
+              List(OParen, QuoteSym, tail.head, CParen) ++ tail.drop(1),
+              0
+            ).sexp()
           case OParen =>
-            sexp(
-              List(OParen, QuoteSym) ++ tail.drop(1)
-            )
+            new SexpParser(
+              List(OParen, QuoteSym) ++ tail.drop(1),
+              0
+            ).sexp()
           case _ => ???
         }
       }
       case NilTok => Nil()
       case CParen => Nil()
       case Dot => {
-        val tail = tokens.drop(1)
-        sexp(List(tail.head))
+        iter += 1
+        sexp()
       }
     }
   }
+  private def moveIter(n: Int) {
+    iter += n
+  }
 
-  private def list(tokens: List[Token]): Expr = {
-    val tail = tokens.drop(1)
-    val car = sexp(tail)
-    Cons(sexp(List(tail(0))), sexp(tail.drop(1).dropRight(1))) //うそ
+  private def list(): Expr = {
+    Cons(sexp(), list()) //last ) ?
+
+  }
+}
+
+object Parser {
+  def parseExpr(input: String) = {
+    val tokens = Tokenizer.tokenize(input)
+    new SexpParser(tokens, 0).sexp()
 
   }
 
