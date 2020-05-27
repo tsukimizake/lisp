@@ -11,7 +11,10 @@ class ParserTest extends org.scalatest.FunSuite {
         CParen
       )
     )
-    Parser.parseExpr("(a test)")
+    assert(
+      Parser.parseExpr("(a test)") ==
+        Cons(Sym("a"), Cons(Sym("test"), Nil()))
+    )
   }
 
   test("(a (nested ) test)") {
@@ -26,7 +29,10 @@ class ParserTest extends org.scalatest.FunSuite {
         CParen
       )
     )
-    Parser.parseExpr("(a (nested) test)")
+    assert(
+      Parser.parseExpr("(a (nested) test)")
+        == Cons(Cons(Sym("nested"), Nil()), Cons(Sym("test"), Nil()))
+    )
   }
 
   test("(a (dotted . list) test)") {
