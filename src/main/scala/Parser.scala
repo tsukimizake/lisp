@@ -20,7 +20,7 @@ case class Symbol(name: String) extends Token { // TODO 変形シングルトン
   implicit def castExpr(): Expr = { Sym(this.name) }
 }
 
-object QuoteSym extends Symbol("quote")
+object QuoteSym extends Sym("quote")
 
 class SexpParser(tokens: List[Token], var iter: Int) {
 
@@ -30,24 +30,9 @@ class SexpParser(tokens: List[Token], var iter: Int) {
       case x: Symbol => { moveIter(1); x.castExpr() }
       case x: NumLit => { moveIter(1); x.castExpr() }
       case x: StrLit => { moveIter(1); x.castExpr() }
-      case Quote => {
-        val tail = tokens.drop(1)
-        tail.head match {
-          case x: Symbol =>
-            new SexpParser(
-              List(OParen, QuoteSym, tail.head, CParen) ++ tail.drop(1),
-              0
-            ).sexp()
-          case OParen =>
-            new SexpParser(
-              List(OParen, QuoteSym) ++ tail.drop(1),
-              0
-            ).sexp()
-          case _ => ???
-        }
-      }
-      case NilTok => Nil()
-      case CParen => Nil()
+      case Quote     => { moveIter(1); Cons(QuoteSym, sexp()) }
+      case NilTok    => Nil()
+      case CParen    => ???
       case Dot => {
         iter += 1
         sexp()
@@ -59,7 +44,12 @@ class SexpParser(tokens: List[Token], var iter: Int) {
   }
 
   private def list(): Expr = {
-    Cons(sexp(), list()) //last ) ?
+    println(tokens)
+    println(iter)
+    if (tokens(iter) == CParen) { return Nil() }
+    val car = sexp()
+    val cdr = list()
+    Cons(car, cdr) //last ) ?
 
   }
 }
