@@ -43,10 +43,12 @@ class SexpParser(tokens: List[Token], var iter: Int) {
   }
 
   private def list(): Expr = {
-    println(tokens)
-    println(iter)
+    //println("list " + iter + tokens(iter))
     if (tokens(iter) == CParen) { moveIter(1); return Nil() }
-    if (tokens(iter) == Dot) { moveIter(1); return sexp() }
+    if (tokens(iter) == Dot) {
+      if (tokens(iter + 2) != CParen) { ??? }
+      moveIter(1); val cdr = sexp(); moveIter(1); return cdr
+    }
     val car = sexp()
     val cdr = list()
     Cons(car, cdr)
