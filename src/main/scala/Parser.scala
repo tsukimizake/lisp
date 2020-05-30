@@ -25,13 +25,14 @@ object QuoteSym extends Sym("quote")
 class SexpParser(tokens: List[Token], var iter: Int) {
 
   def sexp(): Expr = {
+    //println("sexp " + tokens(iter))
     tokens(iter) match {
       case OParen    => { moveIter(1); list() }
       case x: Symbol => { moveIter(1); x.castExpr() }
       case x: NumLit => { moveIter(1); x.castExpr() }
       case x: StrLit => { moveIter(1); x.castExpr() }
       case Quote     => { moveIter(1); Cons(QuoteSym, sexp()) }
-      case NilTok    => Nil()
+      case NilTok    => { moveIter(1); Nil() }
       case CParen    => ???
       case Dot       => ???
     }
