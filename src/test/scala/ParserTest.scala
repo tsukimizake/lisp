@@ -44,6 +44,13 @@ class ParserTest extends org.scalatest.FunSuite {
     // format: on
   }
 
+  test("(a.dot)") {
+    assert(
+      Parser.parseExpr("(a.dot)")
+        == Cons(Sym("a"), Sym("dot"))
+    )
+  }
+
   test("(a (dotted . list) test)") {
     assert(
       Tokenizer.tokenize("(a (dotted . list) test)") == List(
@@ -58,7 +65,24 @@ class ParserTest extends org.scalatest.FunSuite {
         CParen
       )
     )
-    Parser.parseExpr("(a (dotted . list) test)")
+    // format: off
+    assert(
+      Parser.parseExpr("(a (dotted . list) test)")
+      == Cons(
+        Sym("a"),
+        Cons(
+          Cons(
+            Sym("dotted"),
+            Sym("list")
+          ),
+          Cons(
+            Sym("test"),
+            Nil()
+          )
+        )
+      )
+    )
+    // format: on
   }
 
   test("(a '(quoted (dotted . list)  ) test)") {
@@ -79,15 +103,44 @@ class ParserTest extends org.scalatest.FunSuite {
         CParen
       )
     )
-    Parser.parseExpr("(a '(quoted (dotted . list)) test)")
+    //format: off
+    assert(
+      Parser.parseExpr("(a '(quoted (dotted . list)) test)")
+        ==
+          Cons(
+            Sym("a"),
+            Cons(
+              Cons(
+                Sym("quote"),
+                Cons(
+                  Sym("quoted"),
+                  Cons(
+                    Cons(
+                      Sym("dotted"),
+                      Sym("list")
+                    ),
+                    Nil()
+                  )
+                )
+              ),
+              Cons(
+                Sym("test"),
+                Nil()
+              )
+            )
+          )
+    )
+    //format: on
   }
 
   test("42") {
     assert(Tokenizer.tokenize("42") == List(NumLit(42)))
+    assert(Parser.parseExpr("42") == Num(42))
   }
 
   test("\"hoge\"") {
     assert(Tokenizer.tokenize("\"hoge\"") == List(StrLit("hoge")))
+    assert(Parser.parseExpr("\"hoge\"") == Str("hoge"))
   }
 
   test("(a '(quoted (dotted . \"list\") 42) test)") {
@@ -109,6 +162,18 @@ class ParserTest extends org.scalatest.FunSuite {
         CParen
       )
     )
-    Parser.parseExpr("(a '(quoted (dotted . list)) test)")
+
+    // format: off
+    assert(Parser.parseExpr("(a '(quoted (dotted . list)) test)")
+      == 
+        Cons(Sym("a"), 
+          Cons(
+          Cons(Sym("quote"), 
+            Cons(Sym("quoted"), 
+              Cons(Sym("dotted"), Sym("list"))
+              )),
+          Cons(Sym("test"), Nil())))
+      )
+    // format: on
   }
 }

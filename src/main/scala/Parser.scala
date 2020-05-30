@@ -33,12 +33,10 @@ class SexpParser(tokens: List[Token], var iter: Int) {
       case Quote     => { moveIter(1); Cons(QuoteSym, sexp()) }
       case NilTok    => Nil()
       case CParen    => ???
-      case Dot => {
-        iter += 1
-        sexp()
-      }
+      case Dot       => ???
     }
   }
+
   private def moveIter(n: Int) {
     iter += n
   }
@@ -46,11 +44,11 @@ class SexpParser(tokens: List[Token], var iter: Int) {
   private def list(): Expr = {
     println(tokens)
     println(iter)
-    if (tokens(iter) == CParen) { return Nil() }
+    if (tokens(iter) == CParen) { moveIter(1); return Nil() }
+    if (tokens(iter) == Dot) { moveIter(1); return sexp() }
     val car = sexp()
     val cdr = list()
-    Cons(car, cdr) //last ) ?
-
+    Cons(car, cdr)
   }
 }
 
