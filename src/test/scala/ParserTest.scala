@@ -2,6 +2,7 @@ class ParserTest extends org.scalatest.FunSuite {
   test("symbol token") {
     assert(Tokenizer.tokenize("honi") == List(Symbol("honi")))
   }
+
   test("(a test)") {
     assert(
       Tokenizer.tokenize("(a test)") == List(
