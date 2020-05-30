@@ -25,7 +25,7 @@ object QuoteSym extends Sym("quote")
 class SexpParser(tokens: List[Token], var iter: Int) {
 
   def sexp(): Expr = {
-    //println("sexp " + tokens(iter))
+    //println("sexp " + iter + tokens(iter))
     tokens(iter) match {
       case OParen    => { moveIter(1); list() }
       case x: Symbol => { moveIter(1); x.castExpr() }
@@ -47,7 +47,10 @@ class SexpParser(tokens: List[Token], var iter: Int) {
     if (tokens(iter) == CParen) { moveIter(1); return Nil() }
     if (tokens(iter) == Dot) {
       if (tokens(iter + 2) != CParen) { ??? }
-      moveIter(1); val cdr = sexp(); moveIter(1); return cdr
+      moveIter(1)
+      val cdr = sexp()
+      moveIter(1)
+      return cdr
     }
     val car = sexp()
     val cdr = list()
