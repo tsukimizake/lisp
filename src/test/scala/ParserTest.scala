@@ -14,7 +14,7 @@ class ParserTest extends org.scalatest.FunSuite {
     )
     assert(
       Parser.parseExpr("(a test)") ==
-        Cons(Sym("a"), Cons(Sym("test"), Nil()))
+        Right(Cons(Sym("a"), Cons(Sym("test"), Nil())))
     )
   }
 
@@ -34,20 +34,22 @@ class ParserTest extends org.scalatest.FunSuite {
     assert(
       Parser.parseExpr("(a (nested) test)")
         == 
-        Cons(
-          Sym("a"),
-          Cons(
-            Cons(Sym("nested"), Nil()), 
-            Cons(Sym("test"), Nil()))
+          Right(
+            Cons(
+              Sym("a"),
+              Cons(
+                Cons(Sym("nested"), Nil()), 
+                Cons(Sym("test"), Nil()))
+            )
         )
-    )
+  )
     // format: on
   }
 
   test("(a.dot)") {
     assert(
       Parser.parseExpr("(a.dot)")
-        == Cons(Sym("a"), Sym("dot"))
+        == Right(Cons(Sym("a"), Sym("dot")))
     )
   }
 
@@ -68,19 +70,21 @@ class ParserTest extends org.scalatest.FunSuite {
     // format: off
     assert(
       Parser.parseExpr("(a (dotted . list) test)")
-      == Cons(
-        Sym("a"),
-        Cons(
+      == Right(
           Cons(
-            Sym("dotted"),
-            Sym("list")
-          ),
-          Cons(
-            Sym("test"),
-            Nil()
+            Sym("a"),
+            Cons(
+              Cons(
+                Sym("dotted"),
+                Sym("list")
+              ),
+              Cons(
+                Sym("test"),
+                Nil()
+              )
+            )
           )
         )
-      )
     )
     // format: on
   }
@@ -107,25 +111,27 @@ class ParserTest extends org.scalatest.FunSuite {
     assert(
       Parser.parseExpr("(a '(quoted (dotted . list)) test)")
         ==
-          Cons(
-            Sym("a"),
+          Right(
             Cons(
+              Sym("a"),
               Cons(
-                Sym("quote"),
                 Cons(
-                  Sym("quoted"),
+                  Sym("quote"),
                   Cons(
+                    Sym("quoted"),
                     Cons(
-                      Sym("dotted"),
-                      Sym("list")
-                    ),
-                    Nil()
+                      Cons(
+                        Sym("dotted"),
+                        Sym("list")
+                      ),
+                      Nil()
+                    )
                   )
+                ),
+                Cons(
+                  Sym("test"),
+                  Nil()
                 )
-              ),
-              Cons(
-                Sym("test"),
-                Nil()
               )
             )
           )
@@ -135,12 +141,12 @@ class ParserTest extends org.scalatest.FunSuite {
 
   test("42") {
     assert(Tokenizer.tokenize("42") == List(NumLit(42)))
-    assert(Parser.parseExpr("42") == Num(42))
+    assert(Parser.parseExpr("42") == Right(Num(42)))
   }
 
   test("\"hoge\"") {
     assert(Tokenizer.tokenize("\"hoge\"") == List(StrLit("hoge")))
-    assert(Parser.parseExpr("\"hoge\"") == Str("hoge"))
+    assert(Parser.parseExpr("\"hoge\"") == Right(Str("hoge")))
   }
 
   test("(a '(quoted (dotted . \"list\") 42) test)") {
@@ -166,28 +172,30 @@ class ParserTest extends org.scalatest.FunSuite {
     // format: off
     assert(Parser.parseExpr("(a '(quoted (dotted . \"list\") 42) test)")
       == 
-        Cons(
-          Sym("a"),
+        Right(
           Cons(
+            Sym("a"),
             Cons(
-              Sym("quote"),
               Cons(
-                Sym("quoted"),
+                Sym("quote"),
                 Cons(
+                  Sym("quoted"),
                   Cons(
-                    Sym("dotted"),
-                    Str("list")
-                  ),
-                  Cons(
-                    Num(42),
-                    Nil()
+                    Cons(
+                      Sym("dotted"),
+                      Str("list")
+                    ),
+                    Cons(
+                      Num(42),
+                      Nil()
+                    )
                   )
                 )
-              )
-            ),
-          Cons(
-            Sym("test"),
-            Nil()
+              ),
+            Cons(
+              Sym("test"),
+              Nil()
+            )
           )
         )
       )

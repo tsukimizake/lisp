@@ -20,53 +20,60 @@ case class Symbol(name: String) extends Token { // TODO 変形シングルトン
   implicit def castExpr(): Expr = { Sym(this.name) }
 }
 
+case class ParseError(message: String) {}
+
 object QuoteSym extends Sym("quote")
 
-class SexpParser(tokens: List[Token], var iter: Int) {
+sealed class SexpParser(tokens: List[Token], var iter: Int) {
 
-  def sexp(): Expr = {
+  def sexp(): Either[ParseError, Expr] = {
     //println("sexp " + iter + tokens(iter))
     tokens(iter) match {
       case OParen    => { moveIter(1); list() }
-      case x: Symbol => { moveIter(1); x.castExpr() }
-      case x: NumLit => { moveIter(1); x.castExpr() }
-      case x: StrLit => { moveIter(1); x.castExpr() }
-      case Quote     => { moveIter(1); Cons(QuoteSym, sexp()) }
-      case NilTok    => { moveIter(1); Nil() }
-      case CParen    => ???
-      case Dot       => ???
+      case x: Symbol => { moveIter(1); Right(x.castExpr()) }
+      case x: NumLit => { moveIter(1); Right(x.castExpr()) }
+      case x: StrLit => { moveIter(1); Right(x.castExpr()) }
+      case Quote => {
+        moveIter(1);
+        for (cdr <- sexp())
+          yield (Cons(QuoteSym, cdr))
+      }
+      case NilTok => { moveIter(1); Right(Nil()) }
+      case CParen => Left(ParseError("unexpected ) as sexp"))
+      case Dot    => Left(ParseError("unexpected . as sexp"))
     }
   }
 
-  private def moveIter(n: Int) {
+  private[this] def moveIter(n: Int) {
     iter += n
   }
 
-  private def list(): Expr = {
+  private[this] def list(): Either[ParseError, Expr] = {
     //println("list " + iter + tokens(iter))
-    if (tokens(iter) == CParen) { moveIter(1); return Nil() }
+    if (tokens(iter) == CParen) { moveIter(1); return Right(Nil()) }
     if (tokens(iter) == Dot) {
-      if (tokens(iter + 2) != CParen) { ??? }
+      if (tokens(iter + 2) != CParen) {
+        Left(ParseError("unexpected . in list"))
+      }
       moveIter(1)
       val cdr = sexp()
       moveIter(1)
       return cdr
     }
-    val car = sexp()
-    val cdr = list()
-    Cons(car, cdr)
+    for (car <- sexp();
+         cdr <- list()) yield (Cons(car, cdr))
   }
 }
 
 object Parser {
-  def parseExpr(input: String) = {
+  def parseExpr(input: String) : Either[ParseError, Expr]={
     val tokens = Tokenizer.tokenize(input)
     new SexpParser(tokens, 0).sexp()
 
   }
 
-  def parseStatement(input: String): List[Expr] = ???
-  def parseFile(file: File): Expr = ???
+  def parseStatement(input: String): Either[ParseError, List[Expr]] = ???
+  def parseFile(file: File): Either[ParseError, Expr] = ???
 }
 
 object Tokenizer {
