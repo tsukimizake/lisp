@@ -1,13 +1,15 @@
 trait Expr {
-  def show(): String = {
+  override def toString(): String = {
     this match {
-      case Sym(name)      => name
-      case Num(x)         => x.toString()
-      case Str(x)         => "\"" + x + "\""
-      case Bool(true)     => "#t"
-      case Bool(false)    => "#f"
-      case Nil()          => "Nil"
-      case Cons(car, cdr) => "(" + car.show() + " " + cdr.show() + ")"
+      case Sym(name)   => name
+      case Num(x)      => x.toString()
+      case Str(x)      => "\"" + x + "\""
+      case Bool(true)  => "#t"
+      case Bool(false) => "#f"
+      case Nil()       => "Nil"
+      // TODO: listを(a (b (c Nil)))でなく(a b c)で出したい
+      case Cons(car, cdr) =>
+        "(" + car.toString() + " " + cdr.toString() + ")"
     }
   }
 }
