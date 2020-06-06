@@ -12,6 +12,10 @@ trait Expr {
         "(" + car.toString() + " " + cdr.toString() + ")"
     }
   }
+
+  def eval() : Expr = {
+    Eval.eval(this)
+  }
 }
 
 case class Sym(name: String) extends Expr
