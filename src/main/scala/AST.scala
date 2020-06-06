@@ -1,4 +1,16 @@
-trait Expr
+trait Expr {
+  def show(): String = {
+    this match {
+      case Sym(name)      => name
+      case Num(x)         => x.toString()
+      case Str(x)         => "\"" + x + "\""
+      case Bool(true)     => "#t"
+      case Bool(false)    => "#f"
+      case Nil()          => "Nil"
+      case Cons(car, cdr) => "(" + car.show() + " " + cdr.show() + ")"
+    }
+  }
+}
 
 case class Sym(name: String) extends Expr
 case class Cons(car: Expr, cdr: Expr) extends Expr

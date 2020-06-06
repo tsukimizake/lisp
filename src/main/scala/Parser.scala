@@ -66,7 +66,7 @@ sealed class SexpParser(tokens: List[Token], var iter: Int) {
 }
 
 object Parser {
-  def parseExpr(input: String) : Either[ParseError, Expr]={
+  def parseExpr(input: String): Either[ParseError, Expr] = {
     val tokens = Tokenizer.tokenize(input)
     new SexpParser(tokens, 0).sexp()
 
