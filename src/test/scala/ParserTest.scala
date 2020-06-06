@@ -139,6 +139,9 @@ class ParserTest extends org.scalatest.FunSuite {
     //format: on
   }
 
+  test("()") {
+    assert(Parser.parseExpr("()") == Right(Nil()))
+  }
   test("42") {
     assert(Tokenizer.tokenize("42") == List(NumLit(42)))
     assert(Parser.parseExpr("42") == Right(Num(42)))
